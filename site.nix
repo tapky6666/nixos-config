@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 with lib;
-let cfg = config.within.services.site;
+let cfg = config.within.services.fesite;
 in {
   options.within.services.fesite = {
     enable = mkEnableOption "Activates my personal website";
