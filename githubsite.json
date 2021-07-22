@@ -1,8 +1,10 @@
 {
-    "owner": "tapky6666",
-    "repo": "site",
-    "rev": "3d32462f68272d7c914878d589c6a89c9ab07f39",
-    "sha256": "0cs4mgi5gw99nkgi0kn6yim4krmz8fppscjc3crlj9ywl4nqa2hr",
-    "fetchSubmodules": true
+  "url": "https://github.com/tapky6666/site",
+  "rev": "3d32462f68272d7c914878d589c6a89c9ab07f39",
+  "date": "2021-07-22T03:39:25+03:00",
+  "path": "/nix/store/25ihwr7ba9lciy5r2rkxj4ygqqmlgb4i-site-3d32462",
+  "sha256": "1lfqqpybdk9kqa54w4sn74glm9q1smakyk5xyr9i6iys04nr06ng",
+  "fetchSubmodules": false,
+  "deepClone": false,
+  "leaveDotGit": false
 }
-

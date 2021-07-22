@@ -16,7 +16,7 @@ in {
     domain = mkOption {
       type = types.str;
       default = "site.akua";
-      example = "christine.website";
+      example = "fetsorn.website";
       description =
         "The domain name that nginx should check against for HTTP hostnames";
     };
