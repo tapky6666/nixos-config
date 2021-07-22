@@ -26,7 +26,7 @@ in {
     services = {
 
       # webapps
-      site = {
+      fesite = {
         enable = true;
         useACME = true;
         domain = "fetsorn.website";

@@ -2,7 +2,7 @@
 with lib;
 let cfg = config.within.services.site;
 in {
-  options.within.services.site = {
+  options.within.services.fesite = {
     enable = mkEnableOption "Activates my personal website";
     useACME = mkEnableOption "Enables ACME for cert stuff";
 
@@ -15,7 +15,7 @@ in {
 
     domain = mkOption {
       type = types.str;
-      default = "site.akua";
+      default = "fesite.akua";
       example = "fetsorn.website";
       description =
         "The domain name that nginx should check against for HTTP hostnames";
@@ -23,7 +23,7 @@ in {
 
     sockPath = mkOption rec {
       type = types.str;
-      default = "/srv/within/run/site.sock";
+      default = "/srv/within/run/fesite.sock";
       example = default;
       description = "The unix domain socket that site should listen on";
     };
@@ -31,33 +31,33 @@ in {
 
   config = mkIf cfg.enable {
 
-    users.users.site = {
+    users.users.fesite = {
       createHome = true;
       description = "github.com/fetsorn/site";
       isSystemUser = true;
       group = "within";
-      home = "/srv/within/site";
+      home = "/srv/within/fesite";
       extraGroups = [ "keys" ];
     };
 
-    within.secrets.site = {
+    within.secrets.fesite = {
       source = ./secrets/site.env;
-      dest = "/srv/within/site/.env";
-      owner = "site";
+      dest = "/srv/within/fesite/.env";
+      owner = "fesite";
       group = "within";
       permissions = "0400";
     };
 
-    systemd.services.site = {
+    systemd.services.fesite = {
       wantedBy = [ "multi-user.target" ];
-      after = [ "site-key.service" ];
-      wants = [ "site-key.service" ];
+      after = [ "fesite-key.service" ];
+      wants = [ "fesite-key.service" ];
 
       serviceConfig = {
-        User = "site";
+        User = "fesite";
         Group = "within";
         Restart = "on-failure";
-        WorkingDirectory = "/srv/within/site";
+        WorkingDirectory = "/srv/within/fesite";
         RestartSec = "30s";
         Type = "notify";
 
@@ -94,18 +94,18 @@ in {
         UMask = "007";
       };
 
-      script = let site = pkgs.callPackage ./githubsite.nix { };
+      script = let fesite = pkgs.callPackage ./githubsite.nix { };
       in ''
-        export $(cat /srv/within/site/.env | xargs)
+        export $(cat /srv/within/fesite/.env | xargs)
         export SOCKPATH=${cfg.sockPath}
         export PORT=${toString cfg.port}
         export DOMAIN=${toString cfg.domain}
-        cd ${site}
-        exec ${site}/bin/site
+        cd ${fesite}
+        exec ${fesite}/bin/fesite
       '';
     };
 
-    services.nginx.virtualHosts."site" = {
+    services.nginx.virtualHosts."fesite" = {
       serverName = "${cfg.domain}";
       locations."/" = {
         proxyPass = "http://unix:${toString cfg.sockPath}";
@@ -114,7 +114,7 @@ in {
       forceSSL = cfg.useACME;
       useACMEHost = "fetsorn.website";
       extraConfig = ''
-        access_log /var/log/nginx/site.access.log;
+        access_log /var/log/nginx/fesite.access.log;
       '';
     };
   };
