@@ -9,7 +9,7 @@ v4 = "10.77.0.0"
 [hosts.httpserver]
 network = "fake"
 # cloud machines
-[hosts.lufta]
+[hosts.droplet]
 network = "cloud"
-ip_addr = "54.218.104.165"
+ip_addr = "139.59.35.172"
 ssh_pubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGgsdWLA9lAxG7PTARO6X02ZJCwqPT2eMBEtGI30J/MA root@nixos.qcow2.gz-s-4vcpu-8gb-intel-blr1-01"

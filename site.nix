@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }:
 with lib;
-let cfg = config.within.services.xesite;
+let cfg = config.within.services.site;
 in {
-  options.within.services.xesite = {
+  options.within.services.site = {
     enable = mkEnableOption "Activates my personal website";
     useACME = mkEnableOption "Enables ACME for cert stuff";
 
@@ -10,12 +10,12 @@ in {
       type = types.port;
       default = 32837;
       example = 9001;
-      description = "The port number xesite should listen on for HTTP traffic";
+      description = "The port number site should listen on for HTTP traffic";
     };
 
     domain = mkOption {
       type = types.str;
-      default = "xesite.akua";
+      default = "site.akua";
       example = "christine.website";
       description =
         "The domain name that nginx should check against for HTTP hostnames";
@@ -23,41 +23,41 @@ in {
 
     sockPath = mkOption rec {
       type = types.str;
-      default = "/srv/within/run/xesite.sock";
+      default = "/srv/within/run/site.sock";
       example = default;
-      description = "The unix domain socket that xesite should listen on";
+      description = "The unix domain socket that site should listen on";
     };
   };
 
   config = mkIf cfg.enable {
 
-    users.users.xesite = {
+    users.users.site = {
       createHome = true;
-      description = "github.com/Xe/site";
+      description = "github.com/fetsorn/site";
       isSystemUser = true;
       group = "within";
-      home = "/srv/within/xesite";
+      home = "/srv/within/site";
       extraGroups = [ "keys" ];
     };
 
-    within.secrets.xesite = {
-      source = ./secrets/xesite.env;
-      dest = "/srv/within/xesite/.env";
-      owner = "xesite";
+    within.secrets.site = {
+      source = ./secrets/site.env;
+      dest = "/srv/within/site/.env";
+      owner = "site";
       group = "within";
       permissions = "0400";
     };
 
-    systemd.services.xesite = {
+    systemd.services.site = {
       wantedBy = [ "multi-user.target" ];
-      after = [ "xesite-key.service" ];
-      wants = [ "xesite-key.service" ];
+      after = [ "site-key.service" ];
+      wants = [ "site-key.service" ];
 
       serviceConfig = {
-        User = "xesite";
+        User = "site";
         Group = "within";
         Restart = "on-failure";
-        WorkingDirectory = "/srv/within/xesite";
+        WorkingDirectory = "/srv/within/site";
         RestartSec = "30s";
         Type = "notify";
 
@@ -96,16 +96,16 @@ in {
 
       script = let site = pkgs.callPackage ./githubsite.nix { };
       in ''
-        export $(cat /srv/within/xesite/.env | xargs)
+        export $(cat /srv/within/site/.env | xargs)
         export SOCKPATH=${cfg.sockPath}
         export PORT=${toString cfg.port}
         export DOMAIN=${toString cfg.domain}
         cd ${site}
-        exec ${site}/bin/xesite
+        exec ${site}/bin/site
       '';
     };
 
-    services.nginx.virtualHosts."xesite" = {
+    services.nginx.virtualHosts."site" = {
       serverName = "${cfg.domain}";
       locations."/" = {
         proxyPass = "http://unix:${toString cfg.sockPath}";
@@ -114,7 +114,7 @@ in {
       forceSSL = cfg.useACME;
       useACMEHost = "fetsorn.website";
       extraConfig = ''
-        access_log /var/log/nginx/xesite.access.log;
+        access_log /var/log/nginx/site.access.log;
       '';
     };
   };

@@ -1,11 +1,11 @@
 {
-  "lufta" = { pkgs, modulesPath, lib, name, ... }: {
+  "droplet" = { pkgs, modulesPath, lib, name, ... }: {
     imports = lib.optional (builtins.pathExists ./do-userdata.nix) ./do-userdata.nix ++ [
       (modulesPath + "/virtualisation/digital-ocean-config.nix")
       ./acme.nix
       ./crypto.nix
       ./within.nix
-      ./xesite.nix
+      ./site.nix
     ];
 
     deployment.targetHost = "139.59.35.172";
